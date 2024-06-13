@@ -11,5 +11,8 @@
      clearCompletedOption: "button[class='clear-completed']",
      inputContainer: "div[class='input-container']",
      deleteIcon: "button[data-testid='todo-item-button']",
-     item: "div[class='view']"
+     item: "div[class='view']",
+     toDoMVCLink: "a[href='http://todomvc.com']",
+     mvcLinkText: "Part of",
+     toDoMVCLogo: "img[src='site-assets/logo.svg']"
 };

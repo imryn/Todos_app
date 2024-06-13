@@ -1,86 +1,94 @@
+import { Page } from '@playwright/test';
 import {
     findElementAndClick, 
     findElementAndTypeInInput,
     findElementAndPress,
     findElement,
-    // findElementAndDoubleClick, hoverAnElement,
-    // itemIsVisible,
-    // checkElementHasNewAttribute,
+    findElementAndDoubleClick, hoverAnElement,
+    checkElementIsNotExist,
+    checkElementHasNewAttribute,
     checkCssOfColorOnElement,
-    haveText} 
+    haveText,
+    locateElementByText,
+    getCurrentURL} 
     from '../common/helper';
 
 import {BaseEnum, Colors, KeyboardKeys} from '../common/baseEnum';
 import {LocatorsForToDo} from '../common/locators';
-
 
 const TodosPage = {
     
     todoItem: "cleaning the house",
 
     /** add new item to todos list */
-    addItemToDo: function addItemToDoList(page): void {
-        findElementAndClick(page, LocatorsForToDo.toDoInput);
-        findElementAndTypeInInput(page, LocatorsForToDo.toDoInput, this.todoItem);
-        findElementAndPress(page, LocatorsForToDo.toDoInput, KeyboardKeys.ENTER);
-        findElementAndClick(page, LocatorsForToDo.allOption);
+    async addItemToDoList(page: Page) {
+        await findElementAndClick(page, LocatorsForToDo.toDoInput);
+        await findElementAndTypeInInput(page, LocatorsForToDo.toDoInput, this.todoItem);
+        await findElementAndPress(page, LocatorsForToDo.toDoInput, KeyboardKeys.ENTER);
+        await findElementAndClick(page, LocatorsForToDo.allOption);
     },
     
     /** check that the todos list section has all tab options (displayed only after you add new item) */
-    checkOptionsForTodos: function checkOptionsForTodosListSection(page): void {
-        findElement(page, LocatorsForToDo.itemCheckbox);
-        findElement(page, LocatorsForToDo.toDoListOptions);
-        haveText(page, LocatorsForToDo.numberOfItems, "1 item left!");
-        haveText(page, LocatorsForToDo.allOption, "All");
-        haveText(page, LocatorsForToDo.activeOption, "Active");
-        checkCssOfColorOnElement(page, LocatorsForToDo.allOption, 'border-color', Colors.RED);
-        haveText(page, LocatorsForToDo.completedOption, "Completed");
-        haveText(page, LocatorsForToDo.clearCompletedOption, "Clear completed");
+    async checkOptionsForTodosListSection(page: Page) {
+        await findElement(page, LocatorsForToDo.itemCheckbox);
+        await findElement(page, LocatorsForToDo.toDoListOptions);
+        await haveText(page, LocatorsForToDo.numberOfItems, "1 item left!");
+        await haveText(page, LocatorsForToDo.allOption, "All");
+        await haveText(page, LocatorsForToDo.activeOption, "Active");
+        await checkCssOfColorOnElement(page, LocatorsForToDo.allOption, Colors.RED);
+        await haveText(page, LocatorsForToDo.completedOption, "Completed");
+        await haveText(page, LocatorsForToDo.clearCompletedOption, "Clear completed");
     },
     
     /** check the item that was created is exist in the dom and has right text */
-    itemCreated: function itemCreated(page): void {
-        haveText(page, LocatorsForToDo.toDoItemLabel, this.todoItem);
-    }
+    async itemCreated(page: Page) {
+        await haveText(page, LocatorsForToDo.toDoItemLabel, this.todoItem);
+    },
     
     /** add item to todos list and check you can edit it */
-    // editTheItem(): void {
-    //         findElementAndDoubleClick(LocatorsForToDo.toDoItemLabel);
-    //         findElementAndShould(LocatorsForToDo.inputContainer, BaseEnum.EXIST);
-    //         findElementAndType(LocatorsForToDo.toDoItemLi, " updated");
-    //         findElementAndType(LocatorsForToDo.toDoItemLi, KeyboardKeys.ENTER);
-    //         haveText(LocatorsForToDo.toDoItemLabel, `${this.todoItem} updated`, BaseEnum.EXIST);
-    // }
+    async editTheItem(page: Page) {
+        await findElementAndDoubleClick(page, LocatorsForToDo.toDoItemLabel);
+        await findElementAndTypeInInput(page, LocatorsForToDo.toDoItemLi, " updated");
+        await findElementAndPress(page, LocatorsForToDo.toDoItemLi, KeyboardKeys.ENTER);
+        await haveText(page, LocatorsForToDo.toDoItemLabel, `${this.todoItem} updated`);
+    },
     
     /**  add item to todos list and remove it by clicking the delete icon */
-    // removeItemFromTodos(): void {
-    //         hoverAnElement(LocatorsForToDo.item, KeyboardKeys.HOVER);
-    //         itemIsVisible(LocatorsForToDo.deleteIcon);
-    //         findElementAndClick(LocatorsForToDo.deleteIcon)
-    //         findElementAndShould(LocatorsForToDo.toDoItemLi, BaseEnum.NOT_EXIST);
-    // }
+    async removeItemFromTodos(page: Page) {
+        await hoverAnElement(page, LocatorsForToDo.item);
+        await findElement(page, LocatorsForToDo.deleteIcon);
+        await findElementAndClick(page, LocatorsForToDo.deleteIcon)
+        await checkElementIsNotExist(page, LocatorsForToDo.toDoItemLi);
+    },
 
     /** check if item in todos list is being marked as completed and displayed in the completed tab */
-    // checkElementAsCompleted(): void {
-    //     haveText(LocatorsForToDo.numberOfItems, "1 item left!", BaseEnum.EXIST);
-    //     hoverAnElement(LocatorsForToDo.itemCheckbox, KeyboardKeys.HOVER);
-    //     findElementAndClick(LocatorsForToDo.itemCheckbox);
-    //     checkElementHasNewAttribute(LocatorsForToDo.toDoItemLi, BaseEnum.COMPLETED);
-    //     findElementAndClick(LocatorsForToDo.completedOption);
-    //     findElementAndShould(LocatorsForToDo.toDoItemLi, BaseEnum.EXIST);
-    //     haveText(LocatorsForToDo.numberOfItems, "0 items left!", BaseEnum.EXIST);
-    //     findElementAndClick(LocatorsForToDo.activeOption);
-    //     findElementAndShould(LocatorsForToDo.toDoItemLi, BaseEnum.NOT_EXIST);
-    // }
+    async checkElementAsCompleted(page: Page) {
+        await haveText(page, LocatorsForToDo.numberOfItems, "1 item left!");
+        await hoverAnElement(page, LocatorsForToDo.itemCheckbox);
+        await findElementAndClick(page, LocatorsForToDo.itemCheckbox);
+        await checkElementHasNewAttribute(page, LocatorsForToDo.toDoItemLi, 'class', BaseEnum.COMPLETED);
+        await findElementAndClick(page, LocatorsForToDo.completedOption);
+        await findElement(page, LocatorsForToDo.toDoItemLi);
+        await haveText(page, LocatorsForToDo.numberOfItems, "0 items left!");
+        await findElementAndClick(page, LocatorsForToDo.activeOption);
+        await checkElementIsNotExist(page, LocatorsForToDo.toDoItemLi);
+    },
 
     /** check the clear completed button delete checked items */
-    // clearTheTodoList(): void {
-    //     findElementAndClick(LocatorsForToDo.allOption);
-    //     findElementAndShould(LocatorsForToDo.toDoItemLi, BaseEnum.EXIST);
-    //     hoverAnElement(LocatorsForToDo.clearCompletedOption, KeyboardKeys.HOVER);
-    //     findElementAndClick(LocatorsForToDo.clearCompletedOption);
-    //     findElementAndShould(LocatorsForToDo.toDoItemLi, BaseEnum.NOT_EXIST);
-    // }
+    async clearTheTodoList(page: Page) {
+      await findElementAndClick(page, LocatorsForToDo.allOption);
+      await findElement(page, LocatorsForToDo.toDoItemLi);
+      await hoverAnElement(page, LocatorsForToDo.clearCompletedOption);
+      await findElementAndClick(page, LocatorsForToDo.clearCompletedOption);
+      await checkElementIsNotExist(page, LocatorsForToDo.toDoItemLi);
+    },
+
+    async checkTodoMVCLink (page: Page) {
+        await locateElementByText(page, LocatorsForToDo.mvcLinkText)
+        await findElementAndClick(page, LocatorsForToDo.toDoMVCLink)
+        await getCurrentURL(page, 'https://todomvc.com')
+        await findElement(page, LocatorsForToDo.toDoMVCLogo)
+    }
 }
 
 export {TodosPage};
