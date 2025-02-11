@@ -60,6 +60,6 @@ export const getCurrentURL = async (page: Page, textValue: string) => {
     await expect(page).toHaveURL(textValue)
 }
 
-export const domFinishLoaded = async(page: Page) => {
+export const domFinishLoaded = async (page: Page) => {
     await page.waitForLoadState('domcontentloaded');
 }
