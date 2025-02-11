@@ -10,7 +10,8 @@ import {
     checkCssOfColorOnElement,
     haveText,
     locateElementByText,
-    getCurrentURL} 
+    getCurrentURL,
+    domFinishLoaded} 
     from '../common/helper';
 
 import {BaseEnum, Colors, KeyboardKeys} from '../common/baseEnum';
@@ -57,7 +58,7 @@ const TodosPage = {
     async removeItemFromTodos(page: Page) {
         await hoverAnElement(page, LocatorsForToDo.item);
         await findElement(page, LocatorsForToDo.deleteIcon);
-        await findElementAndClick(page, LocatorsForToDo.deleteIcon)
+        await findElementAndClick(page, LocatorsForToDo.deleteIcon);
         await checkElementIsNotExist(page, LocatorsForToDo.toDoItemLi);
     },
 
@@ -84,10 +85,11 @@ const TodosPage = {
     },
 
     async checkTodoMVCLink (page: Page) {
-        await locateElementByText(page, LocatorsForToDo.mvcLinkText)
-        await findElementAndClick(page, LocatorsForToDo.toDoMVCLink)
-        await getCurrentURL(page, 'https://todomvc.com')
-        await findElement(page, LocatorsForToDo.toDoMVCLogo)
+        await locateElementByText(page, LocatorsForToDo.mvcLinkText);
+        await findElementAndClick(page, LocatorsForToDo.toDoMVCLink);
+        await getCurrentURL(page, 'https://todomvc.com');
+        await domFinishLoaded(page);
+        await findElement(page, LocatorsForToDo.toDoMVCLogo);
     }
 }
 
